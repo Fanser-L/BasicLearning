@@ -72,3 +72,15 @@ JDBCUtils.close(conn,ps,rs);
 1. 这里需要较高版本的mysql-connector，低版本的mysql驱动里没有执行批量处理的这个操作。
 2. 新一点的版本的驱动默认情况下批量处理也是处于关闭状态的，需要在**url**后添加 **?rewriteBatchedStatements=true** 来开启批量处理的功能。
 3. 需要一个**addBatch()** 方法来打包sql语句，然后进行执行，之后执行完之后需要清空之前打包的sql语句，使用 **claarBatch**来清空其中的sql语句。
+
+备注：
+
+     PreparedStatement:
+     表示预编译 SQL 语句的对象。
+     SQL 语句被预编译并存储在一个 PreparedStatement对象中。然后可以使用此对象多次有效地执行此语句。
+     
+     Statement:
+     用于执行静态 SQL 语句并返回它产生的结果的对象。
+     默认情况下，ResultSet每个Statement 对象只能同时打开一个对象。
+     因此，如果一个ResultSet对象的读取与另一个 对象的读取交织在一起，则每个Statement对象都必须由不同的对象生成。
+     如果存在打开的对象，则Statement接口中的所有执行方法都会 隐式关闭ResultSet语句的当前对象。
