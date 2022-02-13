@@ -242,6 +242,182 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 Spring中有两种类型的bean，一种是普通bean，一种是工厂bean（FactoryBean）
 
 1. 普通bean，配置文件定义的bean类型就是返回类型。
-2. 工厂Bean，在配置文件定义的bean类型可以和返回类型不一致。 ps：其实有点类似多态的操作。
+2. 工厂Bean，在配置文件定义的bean类型可以和返回类型不一致。例如定义Book类型可以返回到Dept类型，这样来定义一个类。
+    ps：其实有点类似多态的操作。
 
+### IOC操作Bean管理（Bean作用域）
 
+1. 在Spring里，可以设置创建bean实例为单实例还是多实例。
+2. 在Spring里，创建bean实例默认为单实例对象。（单实例是指地址空间是一致的，代表没有在新的地址空间创建新的实例）
+3. 如何设置单实例还是多实例。
+    3.1 在Spring配置文件bean标签中有属性（scope）用于设置单实例还是多实例。
+    3.2 scope属性值
+
+     - 第一个值，singleton 默认值，代表单实例对象。
+     - 第二个值，prototype 代表多实例对象。
+     - （还有request和session，一般不怎么使用，了解即可） 
+![scope](../spring/img/scope.png)
+
+    3.3 singleton和prototype的区别
+     - singleton是单实例，prototype是多实例
+     - 设置scope的值为singleton的时候，加载spring配置文件的时候就会创建单实例对象。设置scope的值为prototype的时候，在调用getBean方法时才会创建多实例对象。
+   
+     
+
+### IOC操作Bean管理（Bean生命周期）
+
+**生命周期**
+
+   1. 从对象创建到被销毁的过程。
+
+**Bean生命周期**
+
+   1. 通过构造器来创建bean实例（无参构造器）
+   2. 为bean的属性设置值和对其他bean引用（通过set方法）
+   3. 调用bean的初始化方法（需要进行配置初始化的方法）
+   4. 可以对bean进行使用了（对象获取成功）
+   5. 当容器关闭的时候，需要对bean销毁的方法（需要进行配置销毁的方法）
+
+普通bean生命周期具体流程：
+
+    1. 创建对象类
+    2. 在对象类中添加set方法，和无参构造方法
+    3. 创建xml配置文件
+    4. 通过bean创建对象类，通过无参构造器来创建类 （1）
+    5. 设置属性值（2）
+    6. 对象类中添加初始化方法，并在bean中调用init-method属性来调用该方法（3）
+    7. 通过getBean方法来创建该类（4）
+    8. 在对象类中添加销毁方法，同样在bean中调用destory-method属性来调用该销毁方法（5）
+
+xml配置文件
+
+``` xml
+<!--        1.通过无参构造器创建bean-->
+        <bean id="order" class="com.fanser.spring5demo2.bean.Order" init-method="initMethod" destroy-method="destoryMethod">
+<!--            2.对bean的属性进行设置,需要调用set方法-->
+            <property name="oname" value="手机"></property>
+        </bean>
+```
+创建对象类
+
+``` java
+package com.fanser.spring5demo2.bean;
+
+/*
+* 创建对象类
+* */
+
+public class Order {
+    private String oname;
+
+    // 1.无参构造
+    public Order() {
+        System.out.println("1.执行了无参构造");
+    }
+    // 2.set方法修改属性
+    public void setOname(String oname) {
+        this.oname = oname;
+        System.out.println("2.执行了set方法修改属性");
+    }
+    // 3.初始化方法
+    public void initMethod(){
+        System.out.println("3.执行了初始化方法");
+    }
+    // 5.销毁方法
+    public void destoryMethod(){
+        System.out.println("5.执行了销毁方法");
+    }
+}
+```
+对该对象进行测试 观察生命周期
+``` java test
+    @Test
+    public void beantest(){
+        ApplicationContext context = new ClassPathXmlApplicationContext("bean5.xml");
+        Order order = context.getBean("order", Order.class);
+        System.out.println("4.获取了对象");
+        System.out.println(order);
+//        5.手动让实例销毁,这里需要进行强制类型转换，因为context方法本身并没有close()方法
+        ((ClassPathXmlApplicationContext) context).close();
+    }
+```
+
+![bean生命周期](../spring/img/bean生命周期.png)
+
+**Bean的后置处理器，这样的bean生命周期有七步**
+
+   1. 通过构造器来创建bean实例（无参构造器）
+   2. 为bean的属性设置值和对其他bean引用（通过set方法）
+   3. **把bean实例传递给后置处理器的方法** postProcessBeforeInitialization
+   4. 调用bean的初始化方法（需要进行配置初始化的方法）
+   5. **把bean实例传递给后置处理器的方法** postProcessAfterInitialization
+   6. 可以对bean进行使用了（对象获取成功）
+   7. 当容器关闭的时候，需要对bean销毁的方法（需要进行配置销毁的方法）
+
+Bean的后置处理器生命周期具体操作流程：
+
+   1. 创建类，实现接口BeanPostProcessor，创建后置处理器 继承的接口中是默认有两个方法的，复制粘贴然后对其修改更好展示其作用。
+   2. 在xml配置文件中添加后置处理器（直接创建bean添加创建的类对象即可，该类继承于BeanPostProcessor，所以可以知道添加了后置处理器）再添加了后置处理器之后，该xml文件中的所有bean都会使用后置处理器。
+   
+
+后置处理器的创建
+``` xml
+<!--    配置后置处理器
+        只要配置了后置处理器，那么这整个xml文件中的bean都会添加后置处理器
+-->
+        <bean id="myBean" class="com.fanser.spring5demo2.bean.root.MyBean"></bean>
+```
+后置处理器对象的创建
+``` java 
+package com.fanser.spring5demo2.bean.root;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.lang.Nullable;
+
+public class MyBean implements BeanPostProcessor {
+    // 这两个方法其实就是BeanPostProcessor中的源码，稍微修改即可
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println("在初始化执行之前执行的方法");
+        return bean;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println("在初始化执行之后执行的方法");
+        return bean;
+    }
+}
+```
+![测试结果](/note/java/spring/img/bean后置处理器.png)
+
+### IOC操作Bean管理（xml自动装配）
+
+1. **什么是自动装配**
+   1. **手动装配** 通过手动修改属性
+   2. 两种自动装配的方式 使用autowire属性中的 ByName 、ByType 
+``` xml
+<!-- 1.手动装配方式 -->
+<!--        1.通过无参构造器创建bean-->
+    <bean id="order" class="com.fanser.spring5demo2.bean.Order" >
+<!--            2.对bean的属性进行设置,需要调用set方法-->
+        <property name="oname" value="手机"></property>
+    </bean>
+```
+``` xml
+<!-- 2.自动装配方式 -->
+<!--        1.通过无参构造器创建bean-->
+<!-- 1. -->
+    <bean id="order" class="com.fanser.spring5demo2.bean.Order" autowire="ByName">
+<!-- 2. -->
+    <!-- <bean id="order" class="com.fanser.spring5demo2.bean.Order" autowire="ByType"> -->
+<!--            2.对bean的属性进行设置,需要调用set方法-->
+        <!-- <property name="oname" value="手机"></property> -->
+    </bean>
+```
+
+### IOC操作Bean管理（外部配置文件读取--数据连接池的引入）
+
+### IOC操作Bean管理 注解方式（创建对象）
+                                                                                          
