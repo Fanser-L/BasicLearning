@@ -6,6 +6,7 @@ import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class MyQueryRunner {
 /*
 * 适用于任何表的增删改查

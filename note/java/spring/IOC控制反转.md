@@ -27,7 +27,7 @@ Spring下载地址：
 ![工厂模式](img/图1.png)
 
 1. 先新建一个普通的User类
-2. 添加jar包，Spring的四大基本jar包，aop bean core exception
+2. 添加jar包，Spring的四大基本jar包，aop、 bean、 core、 exception
 3. 创建一个spring的xml文件
 4. 创建一个bean对象
 5. 通过ApplicationContext 来装入加载的Spring配置文件
@@ -256,13 +256,13 @@ Spring中有两种类型的bean，一种是普通bean，一种是工厂bean（Fa
      - 第一个值，singleton 默认值，代表单实例对象。
      - 第二个值，prototype 代表多实例对象。
      - （还有request和session，一般不怎么使用，了解即可） 
-![scope](../spring/img/scope.png)
+    ![scope](../spring/img/scope.png)
 
     3.3 singleton和prototype的区别
      - singleton是单实例，prototype是多实例
      - 设置scope的值为singleton的时候，加载spring配置文件的时候就会创建单实例对象。设置scope的值为prototype的时候，在调用getBean方法时才会创建多实例对象。
-   
-     
+    
+    
 
 ### IOC操作Bean管理（Bean生命周期）
 
@@ -272,7 +272,7 @@ Spring中有两种类型的bean，一种是普通bean，一种是工厂bean（Fa
 
 **Bean生命周期**
 
-   1. 通过构造器来创建bean实例（无参构造器）
+   1. 通过构造器来创建bean实例（无参数构造）
    2. 为bean的属性设置值和对其他bean引用（通过set方法）
    3. 调用bean的初始化方法（需要进行配置初始化的方法）
    4. 可以对bean进行使用了（对象获取成功）
@@ -358,7 +358,7 @@ Bean的后置处理器生命周期具体操作流程：
 
    1. 创建类，实现接口BeanPostProcessor，创建后置处理器 继承的接口中是默认有两个方法的，复制粘贴然后对其修改更好展示其作用。
    2. 在xml配置文件中添加后置处理器（直接创建bean添加创建的类对象即可，该类继承于BeanPostProcessor，所以可以知道添加了后置处理器）再添加了后置处理器之后，该xml文件中的所有bean都会使用后置处理器。
-   
+
 
 后置处理器的创建
 ``` xml
@@ -405,6 +405,7 @@ public class MyBean implements BeanPostProcessor {
         <property name="oname" value="手机"></property>
     </bean>
 ```
+
 ``` xml
 <!-- 2.自动装配方式 -->
 <!--        1.通过无参构造器创建bean-->
@@ -417,7 +418,160 @@ public class MyBean implements BeanPostProcessor {
     </bean>
 ```
 
+**通过设置<bean>元素的autowire属性指定自动装配，代替了通过<property>标签显示指定Bean的依赖关系。由BeanFactory检查XML配置文件的内容，为Bean自动注入依赖关系。**
+
+Spring提供了多种自动装配方式，autowire属性常用的取值如下所示
+
+- no　　　　　　 不使用自动装配。Bean依赖关系必须通过property元素定义
+- byType　　　　根据属性类型自动装配。BeanFactory查找容器中的全部Bean，如果正好有一个与依赖属性类型相同的Bean，就自动装配这个属性；如果有多个这样的Bean，Spring无法决定注入哪个Bean，就抛出一个致命异常；如果没有匹配的Bean，就什么都不会发生，属性不会被设置
+- byName　　　  根据属性名自动装配。BeanFactory查找容器中的全部Bean，找出id与属性的setter方法入参匹配的Bean。找到即自动注入，否则什么都不做
+- constructor　　与byType的方式类似，不同之处在于它应用于构造器参数。如果在容器中没有找到与构造器参数类型一致的Bean，那么将会抛出异常
+
+在Spring配置文件中通过<bean>元素的autowire属性可以实现自动装配。但是，如果要配置的Bean很多，每个Bean都配置autowire属性也会很繁琐，可不可以统一设置自动注入而不必分别配置每个Bean呢？
+
 ### IOC操作Bean管理（外部配置文件读取--数据连接池的引入）
 
 ### IOC操作Bean管理 注解方式（创建对象）
-                                                                                          
+
+
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/beans/spring-context.xsd">
+
+        <context:component-scan base-package="com.fanser.spring5"></context:component-scan>
+        <context:spring-configured></context:spring-configured>
+</beans>
+```
+
+1. Spring的Bean管理的中常用的注解
+
+   - @component：组件（作用在类上）
+     - Spring中提供@Component的三个衍生注解:(功能目前来讲是一致的)
+       - @Controller :WEB层
+       - @Service :业务层
+       - @Repository :持久层
+
+2. 属性注入的注解:(使用注解注入的方式,可以不用提供set方法.)
+
+   @Value  :用于注入普通类型.
+
+   @Autowired :自动装配:
+
+   * 默认按类型进行装配. ByType
+
+   * 按名称注入:
+
+   * @Qualifier:强制使用名称注入.
+
+   @Resource相当于:
+
+   * @Autowired和@Qualifier一起使用.
+
+3. Bean的作用范围的注解:
+   @Scope:
+
+   - singleton:单例
+
+   - prototype:多例
+
+4. Bean的生命周期的配置:
+   @PostConstruct :相当于init-method
+
+​	   @PreDestroy  :相当于destroy-method
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# [Spring的IOC和工厂模式的区别](https://www.cnblogs.com/wei1/p/9582093.html)
+
+
+
+IOC是使用了反射的技术来动态的生成对象
+
+工厂模式的对象生成是提前在工厂类中定死的
+
+IOC更加灵活
+
+
+
+
+
+IoC——Inversion of Control 控制反转
+
+DI——Dependency Injection 依赖注入
+
+
+1：如何理解IoC/DI
+要想理解上面两个概念，就必须搞清楚如下的问题：
+
+- 参与者都有谁？
+- 依赖：谁依赖于谁？为什么需要依赖？
+- 注入：谁注入于谁？到底注入什么？
+- 控制反转：谁控制谁？控制什么？为何叫反转（有反转就应该有正转了）？
+- 依赖注入和控制反转是同一概念吗？
+
+下面就来简要的回答一下上述问题，把这些问题搞明白了，IoC/DI也就明白了。
+（1）参与者都有谁：
+
+一般有三方参与者，一个是某个对象；一个是IoC/DI的容器；另一个是某个对象的外部资源。
+又要名词解释一下，某个对象指的就是任意的、普通的Java对象; IoC/DI的容器简单点说就是指用来实现IoC/DI功能的一个框架程序；对象的外部资源指的就是对象需要的，但是是从对象外部获取的，都统称资源，比如：对象需要的其它对象、或者是对象需要的文件资源等等。
+（2）谁依赖于谁：
+
+当然是某个对象依赖于IoC/DI的容器
+（3）为什么需要依赖：
+
+对象需要IoC/DI的容器来提供对象需要的外部资源
+（4）谁注入于谁：
+
+很明显是IoC/DI的容器 注入 某个对象
+（5）到底注入什么：
+
+就是注入某个对象所需要的外部资源
+（6）谁控制谁：
+
+当然是IoC/DI的容器来控制对象了
+（7）控制什么：
+
+主要是控制对象实例的创建
+（8）为何叫反转：
+
+反转是相对于正向而言的，那么什么算是正向的呢？考虑一下常规情况下的应用程序，如果要在A里面使用C，你会怎么做呢？当然是直接去创建C的对象，也就是说，是在A类中主动去获取所需要的外部资源C，这种情况被称为正向的。那么什么是反向呢？就是A类不再主动去获取C，而是被动等待，等待IoC/DI的容器获取一个C的实例，然后反向的注入到A类中。
