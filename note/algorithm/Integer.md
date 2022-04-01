@@ -5,8 +5,6 @@
 
 
 
-
-
 首先要求不能使用乘号除号和求余符号，那就基本代表只能使用加减法了。另外int型的整数的大小，存在边界问题，超出边界的情况如何解决？
 
 负数可以为-2^31,但是正数情况却不能为2^31，所以要先排除-2^31/-1这种情况，单独拎出来排除即可。
@@ -26,6 +24,7 @@ public class Division {
             return Integer.MAX_VALUE;
         }
         int negative = 2;
+        //将输入的值都倒置为负值，负值不会有溢出
         if (dividend > 0) {
             negative--;
             dividend = -dividend;
@@ -38,7 +37,7 @@ public class Division {
         result = divideCore(dividend, divisor);
         return negative == 1 ? -result : result;
     }
-
+// 判断除数与被除数的大小，为了更快计算结束，使用加的方式来实现多次计算
     public  int divideCore(int dividend, int divisor) {
         int result = 0;
         while (dividend <= divisor) {
@@ -79,7 +78,41 @@ public class Division {
 | 始于 Java 1.0 | 始于 Java 1.5 |
 | 慢            | 快            |
 
+由于String是不可变类，适合在需要被共享的场合中使用，当一个字符串经常被修改时，最好使用StringBuffer实现。如果用String保存一个经常被修改的字符串，该字符串每次修改时都会创建新的无用的对象，这些无用的对象会被垃圾回收器回收，会影响程序的性能，不建议这么做。
 
+多线程的情况下，推荐使用的是StringBuffer，线程安全，单线程情况下使用StringBuilder会更加快速
+
+```java
+class Solution {
+    public String addBinary(String a, String b) {
+        StringBuffer ans = new StringBuffer();
+
+        int n = Math.max(a.length(), b.length()), carry = 0;
+        for (int i = 0; i < n; ++i) {
+            //减去ascii码的0，因为都是二进制的1和0 所以减去的值刚刚好是1和0，然后再筛选进位
+            carry += i < a.length() ? (a.charAt(a.length() - 1 - i) - '0') : 0;
+            carry += i < b.length() ? (b.charAt(b.length() - 1 - i) - '0') : 0;
+            //将添加过后的值塞回去相加过后那个位置
+            ans.append((char) (carry % 2 + '0'));
+            //对进位操作，
+            carry /= 2;
+        }
+
+        if (carry > 0) {
+            ans.append('1');
+        }
+        ans.reverse();
+
+        return ans.toString();
+    }
+}
+```
+
+#### * StringBuffer是否实现了equals和hashCode方法
+
+String实现了equals()方法和hashCode()方法，new String("java").equals(new String("java"))的结果为true；
+
+而StringBuffer没有实现equals()方法和hashCode()方法，因此，new StringBuffer("java").equals(new StringBuffer("java"))的结果为false，将StringBuffer[对象存储](https://cloud.tencent.com/product/cos?from=10680)进Java集合类中会出现问题；
 
 
 

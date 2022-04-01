@@ -24,7 +24,7 @@ import java.util.List;
 public class PreparedStatementUtils2 {
     @Test
     void test05() {
-        String sql = "select * from student where id <= ?";
+        String sql = "select * from student where id = ? or id = ?";
 //        Student student = query(sql, Student.class, 3);
         List<Student> studentList = null;
         MyQueryRunner myQueryRunner = new MyQueryRunner();
