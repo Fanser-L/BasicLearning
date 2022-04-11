@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第一个Vue文件</title>
+</head>
+<body>
+    <div id="app">
+        <button @click="sub">-</button>
+        <span>{{ msg }}</span>
+        <button @click="add">+</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+        var app =new Vue({
+            el:"#app",
+            data:{
+                msg:1
+            },
+            methods:{
+                add(){
+                    if(this.msg<20)this.msg++;
+                    else alert("别点了，已经被填满了！")
+                },
+                sub(){
+                    if(this.msg>0)
+                    this.msg--;
+                    else alert("已经被榨干了，不要再点了！")
+                }
+            }
+        }) 
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-text指令</title>
+</head>
+<body>
+    <!--注意使用哪些部分没有生效 -->
+    <div id="app">
+        <h2 v-text="msg"></h2>
+        <h2 v-text="msg+'1'"></h2>
+        <h2 v-text="msg">吉安</h2>
+        <h2 v-text="info"></h2>
+        <h2>{{ msg + 1 }}吉安</h2>
+    </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script>
+    var app = new Vue({
+        el:"#app",
+        data:{
+            msg:"井冈山",
+            info:"jisuanji"
+        }
+    })
+</script>
+</body>
+</html>

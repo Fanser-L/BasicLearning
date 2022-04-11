@@ -1,5 +1,7 @@
 # SpringBoot快速入门
 
+## 先聊聊Spring
+
 #### 什么是spring？
 
 Spring是为了解决企业级应用开发的复杂性而创建的，简化开发
@@ -48,7 +50,7 @@ SpringBoot框架中还有两个非常重要的策略：开箱即用和约定优�
 
 SpringBoot应用系统开发模板的基本架构设计从前端到后台进行说明：前端常使用模板引擎，主要有FreeMarker和Thymeleaf，它们都是用Java语言编写的，渲染模板并输出相应文本，使得界面的设计与应用的逻辑分离，同时前端开发还会使用到Bootstrap、AngularJS、JQuery等；在浏览器的数据传输格式上采用Json，非xml，同时提供RESTfulAPI；SpringMVC框架用于数据到达服务器后处理请求；到[数据访问层](https://baike.baidu.com/item/数据访问层/7279662)主要有Hibernate、MyBatis、JPA等持久层框架；数据库常用[MySQL](https://baike.baidu.com/item/MySQL/471251)；
 
-## 微服务
+## 聊聊微服务
 
 ### 什么是微服务？
 
@@ -97,4 +99,83 @@ https://cloud.tencent.com/developer/article/1767804
 
 - 节省了调用资源
 - 每个元素的服务都是可替换的，可以独立升级的软件代码
+- 微服务是低耦合的，是有功能意义的服务，无论是在开发阶段还是在部署阶段都是独立的
+- 微服务能使用多种不同语言开发
+- 易于和第三方集成，微服务允许容易且灵活的方式集成自动部署，通过持续集成工具，如Jenkins, Hudson, bamboo
+
+使用微服务的优点：
+
+- 每个服务足够小，足够内聚，代码容易聚集一个指定的业务功能或者业务需求
+- 开发简单，开发效率高，一个服务可能就是干专一的一件事
+- 微服务能够被小团队开发，这个小团队由三到五个人的开发人员组成
+- 微服务易于被一个开发人员理解，修改和维护，这样小团队能够更关注自己的工作成果。无需通过合作才能体现价值
+- 微服务只是业务逻辑的代码，不会和HTML,CSS 或其他界面组件混合
+- 每个微服务都有自己的存储能力，可以有自己的数据库。也可以有统一数据库。
+
+缺点：
+
+- 开发人员要处理分布式系统的复杂性
+- 多服务器的运维，随着服务的增加，运维人员的压力也在加大
+- 系统部署依赖
+- 服务间的通信成本
+- 数据一致性
+- 系统集成测试
+- 性能监控....
+
+## SpringCloud与微服务的关系
+
+SpringCloud： 是一套目前完整的微服务框架，它是是一系列框架的有序集合。它只是将目前各家公司开发的比较成熟、经得起实际考验的服务框架组合起来，通过SpringBoot风格进行再封装屏蔽掉了复杂的配置和实现原理，最终给开发者留出了一套简单易懂、易部署和易维护的分布式系统开发工具包。它利用Spring Boot的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、数据监控等，都可以用SpringBoot的开发风格做到一键启动和部署。
+
+- 基于SpringBoot提供了一套微服务(microservices)解决方案,包括服务注册与发现,
+- 配置中心,全链路监控,服务网关,负载均衡,熔断器等组件,除了基于NetFlix的开营组件做 高度抽象之外,还有一些选型中立了的开源组件.
+- 分布式微服务架构下的一站式解决方案,是各个微服务架构落地技术的结合体,俗称为微服务全家桶.
+
+## SpringBoot和SpringCloud的关系与区别
+
+1、SpringBoot只是一个快速开发框架，使用注解简化了xml配置，内置了Servlet容器，以Java应用程序进行执行。
+
+2、SpringCloud是一系列框架的集合，可以包含SpringBoot。
+
+- SpringBoot专注于方便的开发单个个体微服务
+- SpringCloud是关注于全局的微服务协调治理框架,它将SpringBoot开发的一个个单体微服务整合并管理起来。为各个微服务之间提供配置管理,服务发现,断路器,路由,微代理,事件总线,决策竞选,分布式会话等集成服务.
+- spring boot使用了约定大于配置的理念，很多集成方案已经帮你选择好了，能不配置就不配置，Spring Cloud很大的一部分是基于Spring boot来实现。
+- SpringBoot可以离开SpringCloud单独使用,而SpringCloud离不开SpringBoot
+
+## 第一个SpringBoot程序
+
+1. 确保网络通畅，跟以往的项目不同，springboot需要联网才能正常搭建项目
+2. SpringBoot需要基于jdk1.8以上的版本，一般还是使用jdk1.8
+3. SpringBoot需要使用何种技术，通过idea勾选来选择需要的技术
+4. 运行SpringBoot程序，需要通过Application程序入口进行
+
+### 实战：
+
+1. 创建springboot项目
+   ![image-20220403161817019](https://s2.loli.net/2022/04/03/PWveTG2MoIAOpxJ.png)
+
+2. 勾选需要的配置
+   ![image-20220403161938311](https://s2.loli.net/2022/04/03/VewEbluTHWBRXpQ.png)
+
+3. 创建一个简单的接口
+   ![image-20220403162031073](../../../../../AppData/Roaming/Typora/typora-user-images/image-20220403162031073.png)
+
+4. 运行application即可
+   ![image-20220403162130158](https://s2.loli.net/2022/04/03/NmlcjJVG7CKR8Wo.png)
+
+5. 出现错误 找不到页面问题，但是居然不是报404
+   ![image-20220403162206300](https://s2.loli.net/2022/04/03/bm7EDU1gBqJalw9.png)
+   问题：项目结构不正确，application要与controller层同级，不能都放在同一个文件夹目录下，否则就会找不到controller
+
+   ![image-20220403162339955](https://s2.loli.net/2022/04/03/4rE3gb25i6WUf8L.png)
+
+调整结构，问题解决！
+
+### 总结：
+
+1. 创建spring initializer，选定与本机上jdk一致的jdk版本，注意目录的命名
+2. 勾选需要的服务和插件
+3. 创建controller
+4. 运行项目
+
+
 
