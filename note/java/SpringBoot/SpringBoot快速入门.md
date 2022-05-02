@@ -1,12 +1,12 @@
 # SpringBoot快速入门
 
-## 先聊聊Spring
+> 官方文档：<https://docs.spring.io/spring-boot/docs/current/reference/html/index.html>
 
-#### 什么是spring？
+## 先聊聊Spring
 
 Spring是为了解决企业级应用开发的复杂性而创建的，简化开发
 
-#### Spring是如何简化开发的？
+### Spring是如何简化开发的？
 
 为了降低Java开发的复杂性，Spring采用了一下4中关键策略：
 
@@ -26,7 +26,7 @@ SpringBoot是一个javaweb的开发框架，和SpringMVC类似，对比其他jav
 
 ### 特点
 
-SpringBoot**基于Spring4.0设计**，不仅继承了Spring框架原有的优秀特性，而且还通过简化配置来进一步简化了Spring应用的整个搭建和开发过程。另外SpringBoot通过集成大量的框架使得依赖包的版本冲突，以及引用的不稳定性等问题得到了很好的解决。 [1] 
+SpringBoot**基于Spring4.0设计**，不仅继承了Spring框架原有的优秀特性，而且还通过简化配置来进一步简化了Spring应用的整个搭建和开发过程。另外SpringBoot通过集成大量的框架使得依赖包的版本冲突，以及引用的不稳定性等问题得到了很好的解决。 
 
 SpringBoot所具备的特征有：
 
@@ -51,6 +51,8 @@ SpringBoot框架中还有两个非常重要的策略：开箱即用和约定优�
 SpringBoot应用系统开发模板的基本架构设计从前端到后台进行说明：前端常使用模板引擎，主要有FreeMarker和Thymeleaf，它们都是用Java语言编写的，渲染模板并输出相应文本，使得界面的设计与应用的逻辑分离，同时前端开发还会使用到Bootstrap、AngularJS、JQuery等；在浏览器的数据传输格式上采用Json，非xml，同时提供RESTfulAPI；SpringMVC框架用于数据到达服务器后处理请求；到[数据访问层](https://baike.baidu.com/item/数据访问层/7279662)主要有Hibernate、MyBatis、JPA等持久层框架；数据库常用[MySQL](https://baike.baidu.com/item/MySQL/471251)；
 
 ## 聊聊微服务
+
+为什么要提到微服务，我们未来开发使用springcloud会需要这些概念。
 
 ### 什么是微服务？
 
