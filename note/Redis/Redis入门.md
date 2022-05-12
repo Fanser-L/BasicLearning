@@ -55,6 +55,9 @@ NoSQL不依赖业务逻辑方式存储，而是以简单的key-value 模式储�
 - 数据都在内存中，==支持持久化==，主要用于备份恢复
 - 除了支持简单的key-value模式，还支持多种数据结构的存储，如==list，set，hash，zset==等等
 - 一般是作为==缓存数据库==辅助持久化的数据库
+- Redis为什么单线程也这么快
+  1. 高性能的服务器不一定是多线程的
+  2. 多线程（CPU上下文切换的时间消耗）并不一定比单线程快
 
 ### 3. MongoDB
 
@@ -173,7 +176,7 @@ redis常见数据类型操作命令 <http://www.redis.cn/commands.html>/
 
 - `keys *` 查看当前库所有key（匹配 ：keys *1）
 
-- `xists key` 判断某个key 是否存在（返回1代表为true 0 为false）
+- `exists key` 判断某个key 是否存在（返回1代表为true 0 为false）
   ![image-20220430140659168](https://s2.loli.net/2022/04/30/71Qa2tgjVoUpC6M.png)
 
 - `type <key>` 查看key 的类型
@@ -392,7 +395,7 @@ Hash类型对应数据结构是两种 ziplist （压缩列表），hashtable（�
 
 ***SortedSet（zset）***是 ***Redis*** 提供的一个非常特别的数据结构，一方面它等价于 ***Java*** 的数据结构 ***Map<String, Double>***，可以给每一个元素 ***value*** 赋予一个权重 ***score***，另一方面它又类似于 ***TreeSet***，内部的元素会按照权重 ***score*** 进行排序，可以得到每个元素的名次，还可以通过 ***score*** 的范围来获取元素的列表。
 
-***zset*** 底层使用了两个数据结构
+***zset*** 底层使用了**两个数据结构**
 
 - ***hash***，***hash*** 的作用就是关联元素 ***value*** 和权重 ***score***，保障元素 ***value*** 的唯一性，可以通过元素 ***value*** 找到相应的 ***score*** 值
 - 跳跃表，跳跃表的目的在于给元素 ***value*** 排序，根据 ***score*** 的范围获取元素列表
@@ -421,7 +424,48 @@ Redis客户端可以订阅任意数量的频道
 
 # 6、Redis新数据类型
 
- #####################404 NOT Found############################
+## 三种特殊数据类型
+
+### geospatial（地理空间）
+
+- [GEOADD](http://www.redis.cn/commands/geoadd.html)
+- [GEODIST](http://www.redis.cn/commands/geodist.html)
+- [GEOHASH](http://www.redis.cn/commands/geohash.html)
+- [GEOPOS](http://www.redis.cn/commands/geopos.html)
+- [GEORADIUS](http://www.redis.cn/commands/georadius.html)
+- [GEORADIUSBYMEMBER](http://www.redis.cn/commands/georadiusbymember.html)
+
+底层是基于zset实现的，没有移除位置操作，可以通过 zrem来实现移除指定元素。
+
+### hyperloglog
+
+**允许容错的情况下使用。**
+
+相比于set ，内存占用是固定的，只需要2^64个空间，也就是12kb，节省内存空间。
+
+用于统计数量，统计不同元素的个数，如访问量等等，个人访问重复只记录为1次。
+
+PFADD  添加一组元素
+
+PFCOUNT 计算一组元素中的非重复元素
+
+PFMERGE 合并两组元素，去除重复项
+
+### Bitmap
+
+状态比较简单的，表示是否这种的，就可以使用bitmaps
+
+更加接近一种数据结构。
+
+setbit key  1 0
+
+setbit key  1 1
+
+setbit key  1 1
+
+setbit key  1 0
+
+
 
 # 7、Jedis操作Redis6
 
@@ -539,9 +583,112 @@ for (String e : zrange) {
 > 2、输入验证码，点击验证，返回成功或失败
 > 3、每个手机号每天只能输入3次
 
+# 8、事务和锁机制
 
+> Redis 事务是一个单独的隔离操作：事务中的所有命令都会序列化，按顺序的执行。事务在执行的过程中，不会被其他客户端发来的命令请求所打断。
+>
+> Redis 事务的主要作用是 串联多个命令 防止别的命令插队。
 
+==Redis单条命令是保证原子性的，但是事务不保证原子性==
 
+==事务没有隔离级别的概念== 
 
+所有的命令并没有直接被执行，只有在发起执行命令的时候才会执行
 
+## Multi、Exec、discard
+
+从输入Multi 命令开始，输入的命令都会依次进入命令队列中 ，但不会执行，直到输入Exec 后，Redis 会将之前的命令队列中的命令依次执行。
+
+组队的过程中可以通过discard 来放弃组队。
+
+![image-20220502202759683](https://s2.loli.net/2022/05/02/ZLOVFu6yxT1QPAm.png)
+
+![image-20220502203023535](https://s2.loli.net/2022/05/02/ozMKIevUQEZyHSJ.png)
+
+![image-20220502203433477](https://s2.loli.net/2022/05/02/A3zrwpWsojGnu4R.png)
+
+![image-20220502203446813](https://s2.loli.net/2022/05/02/Bc8jwZYPV9igtQo.png)
+
+组队时出现错误，全部不执行，执行时出错，错误的不执行。
+
+组队时一荣共荣，组队后互不相干。
+
+## 事务冲突的问题
+
+![image-20220502203644646](https://s2.loli.net/2022/05/02/84ZvJPk9Utesfia.png)
+
+![image-20220502204454587](../../../../AppData/Roaming/Typora/typora-user-images/image-20220502204454587.png)
+
+## 悲观锁和乐观锁
+
+#### 悲观锁：
+
+- 很悲观，认为什么时候都会出现问题，无论做什么都会进行加锁
+
+#### 乐观锁：
+
+- 很乐观，认为什么时候都不会出现问题，所以不会加锁，更新数据的时候判断一下是否有人修改过这个数据。
+- 获取version
+- 更新的时候比较version
+
+> redis的监视测试
+
+使用watch 来充当redis的乐观锁
+
+如果事务执行前，另外一个线程对事务监视的值进行了修改，会导致事务执行失败。
+
+如果出现了事务执行失败的情况，那就先放弃watch  使用unwatch，然后获取最新的值在watch
+
+# 9、事务 秒杀案例
+
+![image-20220502210103316](https://s2.loli.net/2022/05/02/PFSwBlgCXExhfU3.png)
+
+![image-20220504140413143](../../../../AppData/Roaming/Typora/typora-user-images/image-20220504140413143.png)
+
+# 10、持久化 RDB（Redis DataBase）
+
+Redis是内存数据库，如果不进行持久化，内存会断电即失。所以持久化是必要的。
+
+优点：
+
+- 适合大规模的数据恢复
+- 对数据的完整性要求不高
+
+缺点：
+
+- 需要一定的时间间隔进行操作，如果redis意外宕机了，那么最后一次修改的数据就丢失了
+- fork 进程的时候，会占用一定的内存空间
+
+RDB缺点是如果最后一次进行保存时发生了断电，那么会出现数据丢失的情况。
+
+在指定的**时间间隔**内将内存中的==数据集快照==写入内存
+
+备份是如何执行的：
+
+![image-20220504145414042](https://s2.loli.net/2022/05/04/Z5bqGONoM6mKIUT.png)
+
+# 11、持久化AOF
+
+默认是不开启的，需要手动的从配置文件中进行开启，需要将`appendonly` 改为 yes
+
+将我们所有的命令都记录下来（读操作是不进行记录的），如果这个aof文件出错了，那么启动服务器时会出现错误，这样是无法启动redis的。
+
+ ![image-20220504214543789](https://s2.loli.net/2022/05/04/1swCTycl9Fkdj5p.png)
+
+如果aof文件大于64m，就会fork一个新的进程来将文件进行重写
+
+优点：
+
+- 每一次修改都进行同步，文件的完整性会更好
+- 默认开启是每秒同步一次，可能会出现丢失1s的数据
+- 从不同步效率最高
+
+缺点：
+
+- 相对于数据文件来说，aof远远大于rdb，修复的速度也比rdb满
+- aof运行效率也比rdb慢，所以redis默认配置就是rdb
+
+![image-20220504213325051](https://s2.loli.net/2022/05/04/yYHmgTJ2u5KAEox.png)
+
+# 12、主从复制
 
