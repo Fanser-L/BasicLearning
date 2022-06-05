@@ -405,7 +405,6 @@ public class User {
   }
 
 }
-1234567891011121314151617
 ```
 
 2、beans.xml

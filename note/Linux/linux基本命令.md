@@ -84,3 +84,52 @@ o 操作
 :wq 保存修改退出
 
 :q! 退出不修改
+
+![image-20220518234129773](https://s2.loli.net/2022/05/18/EJF5AagLCTSbIUd.png)
+
+![image-20220519123350245](https://s2.loli.net/2022/05/19/iceYJNdqLwXZrbx.png)
+
+![image-20220519130034972](https://s2.loli.net/2022/05/19/l8muMdOx1KTcoBy.png)
+
+![image-20220529194544617](https://s2.loli.net/2022/05/29/leCcwtiMxhSGL9Z.png)
+
+![image-20220519164450783](https://s2.loli.net/2022/05/19/UvMkBGKNl7mxAsn.png)
+
+![image-20220519164651036](https://s2.loli.net/2022/05/19/t8SrPJyimMfcHvA.png)
+
+![image-20220519165601709](https://s2.loli.net/2022/05/19/16vWDZahNedgyrm.png)
+
+## 1.3用户管理命令
+
+查询用户：
+
+```bash
+id： 【user】
+```
+
+用户组的分配：
+
+![image-20220529173759306](https://s2.loli.net/2022/05/29/LhFDQPsvj9g7HmY.png)
+
+## 1.4运行级别管理命令
+
+![image-20220529185755402](https://s2.loli.net/2022/05/29/IZU7dNLr9nAyfqR.png)
+
+![image-20220529190153946](https://s2.loli.net/2022/05/29/tHZV3W2EAdsgj98.png)
+
+## 1.5帮助指令
+
+![image-20220529190601854](https://s2.loli.net/2022/05/29/gIVakR5ufOYZtvL.png)
+
+## 防火墙控制
+
+查看防火墙状态
+
+systemctl status firewalld
+
+开启/关闭防火墙
+
+systemctl start/stop firewalld
+
+
+
